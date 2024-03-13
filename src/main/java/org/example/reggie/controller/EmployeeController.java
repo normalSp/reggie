@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -56,7 +57,7 @@ public class EmployeeController {
         }
 
         //6.登录成功，将员工信息返回给前端
-        request.getSession().setAttribute("employ",employee1.getId());
+        request.getSession().setAttribute("employee",employee1.getId());
         return R.success(employee1);
 
     }
@@ -68,7 +69,33 @@ public class EmployeeController {
      */
     @PostMapping("/logout")
     public R<String> logout(HttpServletRequest request){
-        request.getSession().removeAttribute("employ");
+        request.getSession().removeAttribute("employee");
         return R.success("退出成功");
+    }
+
+    /**
+     * 新增员工
+     * @param employee
+     * @return
+     */
+    @PostMapping
+    public R<String> save(HttpServletRequest request, @RequestBody Employee employee){
+        log.info("新增员工，员工信息：{}", employee.toString());
+
+        //初始信息设置
+        //初始密码设置123456，md5加密
+        employee.setPassword(DigestUtils.md5Hex("123456"));
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        //获得当前登录用户id
+        Long employeeId = (Long) request.getSession().getAttribute("employee");
+
+        employee.setCreateUser(employeeId);
+        employee.setUpdateUser(employeeId);
+
+        employeeService.save(employee);
+        log.info("新增员工成功");
+        return R.success("新增员工成功");
     }
 }
