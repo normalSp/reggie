@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * 员工实体
  */
 @Data
-public class Employee implements Serializable {
+public class  Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,14 +30,16 @@ public class Employee implements Serializable {
 
     private Integer status;
 
+    @TableField(fill = FieldFill.INSERT) //插入时填充
     private LocalDateTime createTime;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE) //插入和更新时填充
     private LocalDateTime updateTime;
 
-    @TableField(fill = FieldFill.INSERT)
+    @TableField(fill = FieldFill.INSERT) //插入时填充
     private Long createUser;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE) //插入和更新时填充
     private Long updateUser;
 
 }
