@@ -1,15 +1,14 @@
 package org.example.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reggie.common.R;
 import org.example.reggie.entity.Employee;
 import org.example.reggie.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -96,5 +95,54 @@ public class EmployeeController {
         employeeService.save(employee);
         log.info("新增员工成功");
         return R.success("新增员工成功");
+    }
+
+    /**
+     * 员工信息分页查询
+     * Page是mp封装的类
+     * 前端用到的是Page这个类
+     * 而不是employee
+     */
+    @GetMapping("/page")
+    public R<Page> page(int page, int pageSize, String name){
+        log.info("分页查询员工，当前页：{}，每页条数：{}，员工姓名：{}", page, pageSize, name);
+
+        //构造分页构造器
+        Page page_ = new Page(page, pageSize);
+
+        //构造条件构造器
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
+
+        //只在name不为空的情况下查询
+        queryWrapper.like(StringUtils.isNotBlank(name), Employee::getName, name);
+
+        //排序条件 根据UpdateTime降序排序
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+
+        //执行查询
+        employeeService.page(page_, queryWrapper);
+
+        return R.success(page_);
+    }
+
+    /**
+     * 根据员工id进行更新
+     * 前端传回的employee对象已经将status设置
+     * @param request
+     * @param employee
+     * @return
+     */
+    @PutMapping
+    public R<String> updata(HttpServletRequest request,@RequestBody Employee employee){
+        log.info("更新员工，员工信息：{}", employee.toString());
+
+        Long  employeeId = (Long) request.getSession().getAttribute("employee");
+
+        employee.setUpdateUser(employeeId);
+        employee.setUpdateTime(LocalDateTime.now());
+
+        employeeService.updateById(employee);
+
+            return R.success("员工修改更新成功");
     }
 }
