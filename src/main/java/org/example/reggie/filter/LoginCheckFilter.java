@@ -33,7 +33,7 @@ public class LoginCheckFilter implements Filter {
         // /employee/page这个请求不知道是什么，目前不加入放行队列会不断回退
         String[] goUrls = new String[]{"/employee/login",
                 "/backend/**","/employee/loginOut",
-                "/front/**"};
+                "/front/**", "/common/**"};
 
         //1.获取本次请求的URI
         String uri = request.getRequestURI();
