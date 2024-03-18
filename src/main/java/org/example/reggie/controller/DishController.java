@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -108,4 +109,58 @@ public class DishController {
         return R.success("更新菜品成功");
     }
 
+    /**
+     * 单个删除 & 批量删除
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    public R<String> delete(Long[] ids){
+        log.info("调用删除菜品方法，传入的菜品id --> ids:{}", ids);
+
+        dishService.removeByIds(Arrays.asList(ids));
+
+        return R.success("删除菜品成功");
+    }
+
+
+    /**
+     * 单个停售 & 批量停售
+     * @param ids
+     * @return
+     */
+    @PostMapping("/status/0")
+    public R<String> discontinued(Long[] ids){
+        LambdaQueryWrapper<Dish>  lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(Dish::getId, ids);
+
+        List<Dish> dishes = dishService.list(lambdaQueryWrapper);
+
+        for (Dish dish : dishes) {
+            dish.setStatus(0);
+            dishService.updateById(dish);
+        }
+
+        return R.success("停售成功");
+    }
+
+    /**
+     * 单个起售 & 批量起售
+     * @param ids
+     * @return
+     */
+    @PostMapping("/status/1")
+    public R<String> activation(Long[] ids){
+        LambdaQueryWrapper<Dish>  lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(Dish::getId, ids);
+
+        List<Dish> dishes = dishService.list(lambdaQueryWrapper);
+
+        for (Dish dish : dishes) {
+            dish.setStatus(1);
+            dishService.updateById(dish);
+        }
+
+        return R.success("启售成功");
+    }
 }

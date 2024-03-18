@@ -108,5 +108,6 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             flavor.setDishId(dishDto.getId());
         }
         dishFlaverService.saveBatch(flavorsFromDD);
+        dishFlaverService.updateBatchById(flavorsFromDD);
     }
 }
