@@ -14,4 +14,5 @@ public class BaseContext {
     public static Long getCurrentUserId(){
         return threadLocal.get();
     }
+
 }
