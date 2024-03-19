@@ -102,7 +102,7 @@ public class DishController {
     }
 
     /**
-     * 更新菜品
+     * 修改菜品信息
      * @param dishDto
      * @return
      */
