@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.example.reggie.common.CustomException;
 import org.example.reggie.common.R;
 import org.example.reggie.dto.DishDto;
 import org.example.reggie.entity.Category;
@@ -87,8 +88,13 @@ public class DishController {
 
     }
 
+    /**
+     * 修改套餐界面展示原信息
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
-    public R<DishDto>  getById(@PathVariable Long id){
+    public R<DishDto> getById(@PathVariable Long id){
 
         DishDto dishDto = dishService.getByIdWithFlavor(id);
 
@@ -118,9 +124,18 @@ public class DishController {
     public R<String> delete(Long[] ids){
         log.info("调用删除菜品方法，传入的菜品id --> ids:{}", ids);
 
-        dishService.removeByIds(Arrays.asList(ids));
+        //如果菜品停售才删除，否则返回R.error
+        for(int i = 0; i < ids.length; i++){
+            Dish dish = dishService.getById(ids[i]);
+            if(0 == dish.getStatus()){
+                dishService.removeById(ids[i]);
+            }
+            else{
+                throw new CustomException("删除失败，请先停售");
+            }
+        }
 
-        return R.success("删除菜品成功");
+        return R.success("删除成功");
     }
 
 
@@ -131,7 +146,7 @@ public class DishController {
      */
     @PostMapping("/status/0")
     public R<String> discontinued(Long[] ids){
-        LambdaQueryWrapper<Dish>  lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.in(Dish::getId, ids);
 
         List<Dish> dishes = dishService.list(lambdaQueryWrapper);
@@ -162,5 +177,23 @@ public class DishController {
         }
 
         return R.success("启售成功");
+    }
+
+    /**
+     * 根据传入id返回dish集合
+     * @return
+     */
+    @GetMapping("/list")
+    public R<List<Dish>> list(Dish dish){
+        LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
+        //菜品起售才显示
+        lambdaQueryWrapper.eq(Dish::getStatus, 1);
+        lambdaQueryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+
+        List<Dish> dishes = dishService.list(lambdaQueryWrapper);
+
+        return R.success(dishes);
+
     }
 }
