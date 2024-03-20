@@ -31,9 +31,15 @@ public class LoginCheckFilter implements Filter {
 
         //不需要拦截的请求
         // /employee/page这个请求不知道是什么，目前不加入放行队列会不断回退
-        String[] goUrls = new String[]{"/employee/login",
-                "/backend/**","/employee/loginOut",
-                "/front/**", "/common/**"};
+        String[] goUrls = new String[]{
+                "/employee/login",
+                "/backend/**",
+                "/employee/loginOut",
+                "/front/**",
+                "/common/**",
+                "/user/sendMsg",
+                "user/login"
+        };
 
         //1.获取本次请求的URI
         String uri = request.getRequestURI();
@@ -54,6 +60,19 @@ public class LoginCheckFilter implements Filter {
             //使用BaseContext工具类中的setCurrentUserId方法在线程内共享当前用户id
             Long employeeId = (Long) request.getSession().getAttribute("employee");
             BaseContext.setCurrentUserId(employeeId);
+
+            log.info("LoginCheckFilter-doFilter 线程id为：{}", Thread.currentThread().getId());
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+        //若已经登录过，则放行(移动端)
+        if(request.getSession().getAttribute("user") != null){
+            log.info("3.已经登录过，放行，用户id为：{}", request.getSession().getAttribute("user"));
+
+            //使用BaseContext工具类中的setCurrentUserId方法在线程内共享当前用户id
+            Long userId = (Long) request.getSession().getAttribute("user");
+            BaseContext.setCurrentUserId(userId);
 
             log.info("LoginCheckFilter-doFilter 线程id为：{}", Thread.currentThread().getId());
 
