@@ -38,7 +38,7 @@ public class LoginCheckFilter implements Filter {
                 "/front/**",
                 "/common/**",
                 "/user/sendMsg",
-                "user/login"
+                "/user/login"
         };
 
         //1.获取本次请求的URI

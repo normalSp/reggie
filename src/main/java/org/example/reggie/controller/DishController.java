@@ -9,14 +9,16 @@ import org.example.reggie.common.R;
 import org.example.reggie.dto.DishDto;
 import org.example.reggie.entity.Category;
 import org.example.reggie.entity.Dish;
+import org.example.reggie.entity.DishFlavor;
 import org.example.reggie.service.CategoryService;
+import org.example.reggie.service.DishFlavorService;
 import org.example.reggie.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -27,6 +29,8 @@ public class DishController {
     private DishService dishService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private DishFlavorService dishFlavorService;
 
     /**
      * 新增菜品
@@ -180,20 +184,45 @@ public class DishController {
     }
 
     /**
-     * 根据传入id返回dish集合
+     * 根据传入id返回dishDto集合
      * @return
      */
+    @Transactional
     @GetMapping("/list")
-    public R<List<Dish>> list(Dish dish){
+    public R<List<DishDto>> list(Dish dish){
         LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
         //菜品起售才显示
         lambdaQueryWrapper.eq(Dish::getStatus, 1);
         lambdaQueryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
 
+        //查出dishes
         List<Dish> dishes = dishService.list(lambdaQueryWrapper);
+        List<DishDto> dishDtos = new ArrayList<>();
 
-        return R.success(dishes);
+        //将dishes复制进dishDto中
+        for (Dish dish1 : dishes) {
+            DishDto dishDto = new DishDto();
+            BeanUtils.copyProperties(dish1, dishDto);
+            dishDtos.add(dishDto);
+        }
+
+        for (DishDto dishDto : dishDtos) {
+            Category category = categoryService.getById(dishDto.getCategoryId());
+            dishDto.setCategoryName(category.getName());
+
+            //查出dishFlavors
+            LambdaQueryWrapper<DishFlavor> lambdaQueryWrapper1 = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper1.eq(DishFlavor::getDishId, dishDto.getId());
+            List<DishFlavor>  dishFlavors = dishFlavorService.list(lambdaQueryWrapper1);
+
+            //将dishFlavors复制进dishDto
+            dishDto.setFlavors(dishFlavors);
+
+        }
+
+
+        return R.success(dishDtos);
 
     }
 }

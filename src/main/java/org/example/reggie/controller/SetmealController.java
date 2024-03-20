@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -186,5 +187,16 @@ public class SetmealController {
         setmealService.updateWithDish(setmealDto);
 
         return R.success("修改套餐成功");
+    }
+
+    @GetMapping("/list")
+    public R<List<Setmeal>> list(@RequestParam Map<String,String> map){
+        LambdaQueryWrapper<Setmeal> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(map.get("categoryId") != null, Setmeal::getCategoryId, map.get("categoryId"));
+        lambdaQueryWrapper.eq(map.get("status") != null, Setmeal::getStatus, map.get("status"));
+        lambdaQueryWrapper.orderByDesc(Setmeal::getUpdateTime);
+
+        List<Setmeal> setmealList = setmealService.list(lambdaQueryWrapper);
+        return R.success(setmealList);
     }
 }
