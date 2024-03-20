@@ -20,4 +20,5 @@ mybatis-plus:
 
 reggie:
   path: D:\WorkSpace\temp\
-
+  accessKeyId:
+  accessKeySecret:
