@@ -83,15 +83,6 @@ public class EmployeeController {
         //初始密码设置123456，md5加密
         employee.setPassword(DigestUtils.md5Hex("123456"));
 
-        //employee.setCreateTime(LocalDateTime.now());
-        //employee.setUpdateTime(LocalDateTime.now());
-
-        //获得当前登录用户id
-        //Long employeeId = (Long) request.getSession().getAttribute("employee");
-
-        //employee.setCreateUser(employeeId);
-        //employee.setUpdateUser(employeeId);
-
         employeeService.save(employee);
         log.info("新增员工成功");
         return R.success("新增员工成功");
