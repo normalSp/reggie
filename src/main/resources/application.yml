@@ -6,9 +6,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://39.106.77.183:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: root
-      password: Aa565034470
+      password: 565034470
 mybatis-plus:
   configuration:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
@@ -19,7 +19,9 @@ mybatis-plus:
       id-type: ASSIGN_ID
 
 reggie:
-  path: D:\WorkSpace\temp\
+# Linux目录 --> /usr/local/WorkSpace/temp
+  path: /usr/local/WorkSpace/temp
+# windows目录 --> D:\WorkSpace\temp\
   accessKeyId: LTAI5tMHJgr
   accessKeySecret: Hv0t8CKG2FO
   accessKeyId_: 6cdhZeC4sW5hU
