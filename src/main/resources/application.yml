@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8081
 spring:
   application:
     name: reggie_take_out
@@ -19,7 +19,7 @@ mybatis-plus:
       id-type: ASSIGN_ID
 
 reggie:
-# Linux目录 --> /usr/local/WorkSpace/temp
+# Linux目录 --> /usr/local/WorkSpace/temp/
   path: /usr/local/WorkSpace/temp
 # windows目录 --> D:\WorkSpace\temp\
   accessKeyId: LTAI5tMHJgr
