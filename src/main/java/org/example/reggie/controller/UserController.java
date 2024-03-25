@@ -29,6 +29,11 @@ public class UserController {
     @Value("${reggie.accessKeySecret}")
     private String accessKeySecret;
 
+    @Value("${reggie.accessKeyId_}")
+    private String accessKeyId_;
+    @Value("${reggie.accessKeySecret_}")
+    private String accessKeySecre_;
+
     @Autowired
     private UserService userService;
 
@@ -39,6 +44,13 @@ public class UserController {
      */
     @PostMapping("/sendMsg")
     public R<String> sendMsg(@RequestBody User user, HttpSession httpSession) {
+        //0.获取配置文件中的accessKeyId和accessKeySecret
+        accessKeyId = accessKeyId + accessKeyId_;
+        accessKeySecret = accessKeySecret + accessKeySecre_;
+
+        log.info("accessKeyId:{}", accessKeyId);
+        log.info("accessKeySecret:{}", accessKeySecret);
+
         //1.获取手机号
         String phoneNumber = user.getPhone();
 
