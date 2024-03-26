@@ -15,11 +15,13 @@ import org.example.reggie.service.DishFlavorService;
 import org.example.reggie.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -31,6 +33,8 @@ public class DishController {
     private CategoryService categoryService;
     @Autowired
     private DishFlavorService dishFlavorService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 新增菜品
@@ -42,6 +46,9 @@ public class DishController {
         log.info("传入的菜品信息 --> dishDto:{}", dishDto.toString());
 
         dishService.saveWithFlavor(dishDto);
+
+        //清理redis缓存数据
+        redisTemplate.delete("dish_" + dishDto.getCategoryId() + "_" + dishDto.getStatus());
 
         return R.success("新增菜品成功");
     }
@@ -116,6 +123,9 @@ public class DishController {
 
         dishService.updateWithFlavor(dishDto);
 
+        //清理redis缓存数据
+        redisTemplate.delete("dish_" + dishDto.getCategoryId() + "_" + dishDto.getStatus());
+        
         return R.success("更新菜品成功");
     }
 
@@ -190,6 +200,16 @@ public class DishController {
     @Transactional
     @GetMapping("/list")
     public R<List<DishDto>> list(Dish dish){
+        //查询redis，按分类构造key
+        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();
+        List<DishDto> dishDtos = (List<DishDto>) redisTemplate.opsForValue().get(key);
+
+        //如果dishDtos不为空。直接返回
+        if(dishDtos != null){
+            return R.success(dishDtos);
+        }
+
+        //如果redis为空，执行sql查询
         LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
         //菜品起售才显示
@@ -198,7 +218,7 @@ public class DishController {
 
         //查出dishes
         List<Dish> dishes = dishService.list(lambdaQueryWrapper);
-        List<DishDto> dishDtos = new ArrayList<>();
+        dishDtos = new ArrayList<>();
 
         //将dishes复制进dishDto中
         for (Dish dish1 : dishes) {
@@ -221,6 +241,8 @@ public class DishController {
 
         }
 
+        //将数据存回redis
+        redisTemplate.opsForValue().set(key, dishDtos, 1, TimeUnit.HOURS);
 
         return R.success(dishDtos);
 
