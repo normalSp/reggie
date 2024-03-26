@@ -3,6 +3,19 @@ server:
 spring:
   application:
     name: reggie_take_out
+    #Redis相关配置
+  redis:
+    host: 39.106.77.183
+    port: 6379
+    password: 565034470
+    database: 0 #操作的是0号数据库
+    jedis:
+      #Redis连接池配置
+      pool:
+        max-active: 8 #最大连接数
+        max-wait: 1ms #连接池最大阻塞等待时间
+        max-idle: 4 #连接池中的最大空闲连接
+        min-idle: 0 #连接池中的最小空闲连接
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,9 +33,10 @@ mybatis-plus:
 
 reggie:
 # Linux目录 --> /usr/local/WorkSpace/temp/
-  path: /usr/local/WorkSpace/temp
+  path: /usr/local/WorkSpace/temp/
 # windows目录 --> D:\WorkSpace\temp\
   accessKeyId: LTAI5tMHJgr
   accessKeySecret: Hv0t8CKG2FO
   accessKeyId_: 6cdhZeC4sW5hU
   accessKeySecret_: 8IIR28QhHNf0FpusiRg
+
