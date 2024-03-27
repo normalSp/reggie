@@ -15,6 +15,9 @@ import org.example.reggie.service.SetmealDishService;
 import org.example.reggie.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,6 +50,7 @@ public class SetmealController {
      * @return
      */
     @PostMapping
+    @CacheEvict(value = "setmeal", key = "#setmealDto.categoryId+'_'+#setmealDto.status")
     public R<String> save(@RequestBody SetmealDto setmealDto){
         log.info("新增套餐信息：{}",setmealDto);
 
@@ -103,6 +107,7 @@ public class SetmealController {
      */
     @Transactional
     @DeleteMapping
+    @CacheEvict(value = "setmeal", allEntries = true)
     public R<String> deletes(Long[] ids){
         log.info("调用删除套餐方法，传入id：{}",ids);
 
@@ -190,6 +195,7 @@ public class SetmealController {
     }
 
     @GetMapping("/list")
+    @Cacheable(value = "setmeal", key = "#map.get('categoryId')+'_'+#map.get('status')")
     public R<List<Setmeal>> list(@RequestParam Map<String,String> map){
         LambdaQueryWrapper<Setmeal> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(map.get("categoryId") != null, Setmeal::getCategoryId, map.get("categoryId"));
