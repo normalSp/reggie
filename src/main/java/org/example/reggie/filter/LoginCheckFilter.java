@@ -30,7 +30,6 @@ public class LoginCheckFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse)servletResponse;
 
         //不需要拦截的请求
-        // /employee/page这个请求不知道是什么，目前不加入放行队列会不断回退
         String[] goUrls = new String[]{
                 "/employee/login",
                 "/backend/**",
@@ -38,7 +37,11 @@ public class LoginCheckFilter implements Filter {
                 "/front/**",
                 "/common/**",
                 "/user/sendMsg",
-                "/user/login"
+                "/user/login",
+                "/doc.html",
+                "/webjars/**",
+                "/swagger-resources",
+                "/v2/api-docs"
         };
 
         //1.获取本次请求的URI
