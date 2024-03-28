@@ -492,6 +492,321 @@ public class MybatisPlusConfig {
 
 
 
+# 1. 缓存优化
+
+![image-20240326150612936](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240326150612936.png)
+
+![image-20240326150626750](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240326150626750.png)
+
+
+
+## 1.1 短信验证码缓存
+
+![image-20240326152104015](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240326152104015.png)
+
+
+
+## 1.2 菜品信息缓存
+
+![image-20240326155900717](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240326155900717.png)
+
+![image-20240326160454648](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240326160454648.png)
+
+
+
+## 1.3 套餐信息缓存
+
+![image-20240327095404162](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327095404162.png)
+
+
+
+# 2. 数据库读写分离
+
+![image-20240327101507138](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327101507138.png)
+
+![image-20240327101517058](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327101517058.png)
+
+![image-20240327101736780](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327101736780.png)
+
+![image-20240327101828207](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327101828207.png)
+
+
+
+## 2.1 主从服务器配置
+
+![image-20240327102527934](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327102527934.png)
+
+![image-20240327102722447](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327102722447.png)
+
+![image-20240327102733106](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327102733106.png)
+
+![image-20240327103230821](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327103230821.png)
+
+![image-20240327103259518](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327103259518.png)
+
+![image-20240327103420186](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327103420186.png)
+
+![image-20240327110159865](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327110159865.png)
+
+![image-20240327110902835](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327110902835.png)
+
+
+
+## 2.2 读写分离 Sharding-JDBC介绍
+
+![image-20240327111720911](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327111720911.png)
+
+![image-20240327111738192](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327111738192.png)
+
+![image-20240327111923846](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327111923846.png)
+
+
+
+### 2.2.1 入门案例
+
+![image-20240327134043859](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240327134043859.png)
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <version>4.0.0-RC1</version>
+</dependency>
+```
+
+```yml
+server:
+  port: 8080
+spring:
+  shardingsphere:
+    datasource:
+      names:
+        master,slave
+      # 主数据源
+      master:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://39.106.77.183:3306/reggie_ms?characterEncoding=utf-8
+        username: root
+        password: 565034470
+      # 从数据源
+      slave:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/reggie_ms?characterEncoding=utf-8
+        username: PlumSnow
+        password: Aa565034470
+    masterslave:
+      # 读写分离配置
+      load-balance-algorithm-type: round_robin
+      # 最终的数据源名称
+      name: dataSource
+      # 主库数据源名称
+      master-data-source-name: master
+      # 从库数据源名称列表，多个逗号分隔
+      slave-data-source-names: slave
+    props:
+      sql:
+        show: true #开启SQL显示，默认false
+  main:
+    allow-bean-definition-overriding: true
+mybatis-plus:
+  configuration:
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+```
+
+
+
+# 3. 前后端分离
+
+![image-20240328092635168](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328092635168.png)
+
+![image-20240328092849247](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328092849247.png)
+
+![image-20240328093317911](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328093317911.png)
+
+![image-20240328093340307](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328093340307.png)
+
+
+
+## 3.1 YApi
+
+![image-20240328093546647](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328093546647.png)
+
+
+
+## 3.2 Swagger
+
+![image-20240328095523545](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328095523545.png)
+
+![image-20240328095630123](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328095630123.png)
+
+![image-20240328095646172](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328095646172.png)
+
+![image-20240328100653475](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328100653475.png)
+
+```java
+package org.example.reggie.config;
+
+import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
+import lombok.extern.slf4j.Slf4j;
+import org.example.reggie.common.JacksonObjectMapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.List;
+
+/**
+ * 静态资源映射
+ */
+@Slf4j
+@Configuration
+@EnableSwagger2
+@EnableKnife4j
+public class WebMvcConfig extends WebMvcConfigurationSupport {
+    @Override
+    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+        log.info("开始静态资源映射");
+        registry.addResourceHandler("/backend/**")
+                .addResourceLocations("classpath:/backend/");
+        registry.addResourceHandler("/front/**")
+                .addResourceLocations("classpath:/front/");
+        registry.addResourceHandler("doc.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+
+    /**
+     * 扩展mvc框架的消息转换器
+     * @param converters
+     */
+    @Override
+    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        log.info("开始扩展mvc框架的消息转换器");
+
+        //创建消息转换器对象
+        MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
+
+        //设置对象转换器，使用Jackson将Java对象装换成json
+        messageConverter.setObjectMapper(new JacksonObjectMapper());
+
+        //将消息转换器添加到mvc框架的转换器集合中，设置index为0 优先使用
+        converters.add(0, messageConverter);
+
+    }
+
+    @Bean
+    public Docket createRestApi() {
+        // 文档类型
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("org.example.reggie.controller"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("瑞吉外卖")
+                .version("1.0")
+                .description("瑞吉外卖接口文档")
+                .build();
+    }
+}
+
+```
+
+![image-20240328101251943](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328101251943.png)
+
+![image-20240328101419866](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328101419866.png)
+
+```java
+"/doc.html",
+"/webjars/**",
+"/swagger-resources",
+"/v2/api-docs"
+```
+
+**通过：**
+
+**项目域名:端口号/doc.html**
+
+**访问**
+
+![image-20240328102139131](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328102139131.png)
+
+可以用于测试
+
+
+
+### 3.2.1 Swagger 常用注解
+
+![image-20240328102652985](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328102652985.png)
+
+![image-20240328103016275](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328103016275.png)
+
+![image-20240328103145170](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328103145170.png)
+
+![image-20240328103158927](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328103158927.png)
+
+ 
+
+![image-20240328103234054](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328103234054.png)
+
+
+
+## 3.3 项目部署
+
+![image-20240328103500436](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328103500436.png)
+
+![image-20240328103842391](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328103842391.png)
+
+
+
+### 3.3.1 前端部署
+
+![image-20240328103952005](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328103952005.png)
+
+![image-20240328104322364](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328104322364.png)
+
+rewrite：重写访问路径，去除 api  
+
+![image-20240328111110022](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328111110022.png)
+
+**记得记得清浏览器缓存！！！！**
+
+
+
+### 3.3.2 后端部署
+
+![image-20240328111240453](https://raw.githubusercontent.com/normalSp/imgSave/master/image-20240328111240453.png)
+
+**启动命令：**
+
+java -jar reggie_take_out-1.0-SNAPSHOT.jar &> reggie_take_out.log &
+
+
+
+
+
 
 
 
